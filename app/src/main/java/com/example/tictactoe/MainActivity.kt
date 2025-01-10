@@ -1,7 +1,6 @@
 package com.example.tictactoe
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -71,5 +70,16 @@ class MainActivity : AppCompatActivity() {
 
         val textView : TextView = findViewById(R.id.message_text_view)
         textView.text = "It's ${currentPlayer.playerName} turn!"
+    }
+
+    private fun restartGame() {
+        for(row in 1..3) {
+            for(col in 1..3) {
+                val boardCellFragment : BoardCellFragment = supportFragmentManager.findFragmentByTag("board-cell-fragment-${row}-${col}") as BoardCellFragment
+                boardCellFragment.restartGameCell()
+            }
+        }
+
+        currentPlayer = PlayerState.X
     }
 }

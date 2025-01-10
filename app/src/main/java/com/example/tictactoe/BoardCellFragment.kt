@@ -41,4 +41,10 @@ class BoardCellFragment : Fragment() {
 
         return view
     }
+
+    fun restartGameCell() {
+        val button : Button? = view?.findViewById(R.id.cell_button)
+        text = ""
+        button?.text = text
+    }
 }
