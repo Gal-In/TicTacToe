@@ -57,10 +57,63 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun checkIsEndOfGame() {
+    private fun checkIsEndOfGame(): Boolean {
         // TODO: implement this function, both for empty board, and a winner
         // supportFragmentManager.findFragmentByTag("board-cell-fragment-${row}-${col}")
+        // Check rows
+        for (row in 0..2) {
+            val first = getCellSymbol(row, 0)
+            if (first != " " && first == getCellSymbol(row, 1) && first == getCellSymbol(row, 2)) {
+                println("Player $first wins!")
+                return true
+            }
+        }
 
+        // Check columns
+        for (col in 0..2) {
+            val first = getCellSymbol(0, col)
+            if (first != " " && first == getCellSymbol(1, col) && first == getCellSymbol(2, col)) {
+                println("Player $first wins!")
+                return true
+            }
+        }
+
+        // Check diagonals
+        val center = getCellSymbol(1, 1)
+        if (center != " " && (
+                    (center == getCellSymbol(0, 0) && center == getCellSymbol(2, 2)) ||
+                            (center == getCellSymbol(0, 2) && center == getCellSymbol(2, 0))
+                    )) {
+            println("Player $center wins!")
+            return true
+        }
+
+        // Check for draw
+        var isDraw = true
+        for (row in 0..2) {
+            for (col in 0..2) {
+                if (getCellSymbol(row, col) == " ") {
+                    isDraw = false // At least one empty cell remains
+                    break
+                }
+            }
+            if (!isDraw) break
+        }
+
+        if (isDraw) {
+            println("It's a draw!")
+            return true
+        }
+
+        // Game is not over
+        return false
+    }
+
+    private fun getCellSymbol(row: Int, col: Int): String {
+//        val tag = "board-cell-fragment-$row-$col"
+//        supportFragmentManager.findFragmentByTag(tag) as? BoardCellFragment
+        val cellFragment = supportFragmentManager.findFragmentByTag("board-cell-fragment-${row}-${col}")
+        return cellFragment.toString()
     }
 
     private fun switchPlayers() {
