@@ -1,7 +1,6 @@
 package com.example.tictactoe
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +8,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.FragmentTransaction
 import androidx.gridlayout.widget.GridLayout
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
 
 enum class PlayerState(val playerName:String) {
     X("X"),
@@ -31,7 +36,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        val button: Button = findViewById(R.id.reset_button)
+        button.visibility = View.GONE
         initBoardCells()
     }
 
@@ -44,8 +50,8 @@ class MainActivity : AppCompatActivity() {
 
                 currFragment.onClickListener = object : BoardCellFragment.OnCellClickListener {
                     override fun onCellClicked() {
-                        switchPlayers()
-                        checkIsEndOfGame()
+                        if(checkIsEndOfGame()) showResetButton()
+                        else switchPlayers()
                     }
                 }
 
@@ -57,42 +63,52 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun showResetButton() {
+        val button: Button = findViewById(R.id.reset_button)
+        button.visibility = View.VISIBLE
+
+        button.setOnClickListener {
+                restartGame()
+        }
+    }
+
     private fun checkIsEndOfGame(): Boolean {
-        // TODO: implement this function, both for empty board, and a winner
-        // supportFragmentManager.findFragmentByTag("board-cell-fragment-${row}-${col}")
         // Check rows
-        for (row in 0..2) {
-            val first = getCellSymbol(row, 0)
-            if (first != " " && first == getCellSymbol(row, 1) && first == getCellSymbol(row, 2)) {
-                println("Player $first wins!")
+        for (row in 1..3) {
+            val first = getCellSymbol(row, 1)
+            if (first != "" && first == getCellSymbol(row, 2) && first == getCellSymbol(row, 3)) {
+                val textView : TextView = findViewById(R.id.message_text_view)
+                textView.text = "${currentPlayer} won"
                 return true
             }
         }
 
         // Check columns
-        for (col in 0..2) {
-            val first = getCellSymbol(0, col)
-            if (first != " " && first == getCellSymbol(1, col) && first == getCellSymbol(2, col)) {
-                println("Player $first wins!")
+        for (col in 1..3) {
+            val first = getCellSymbol(1, col)
+            if (first != "" && first == getCellSymbol(2, col) && first == getCellSymbol(3, col)) {
+                val textView : TextView = findViewById(R.id.message_text_view)
+                textView.text = "${currentPlayer} won"
                 return true
             }
         }
 
         // Check diagonals
-        val center = getCellSymbol(1, 1)
-        if (center != " " && (
-                    (center == getCellSymbol(0, 0) && center == getCellSymbol(2, 2)) ||
-                            (center == getCellSymbol(0, 2) && center == getCellSymbol(2, 0))
+        val center = getCellSymbol(2, 2)
+        if (center != "" && (
+                    (center == getCellSymbol(1, 1) && center == getCellSymbol(3, 3)) ||
+                            (center == getCellSymbol(1, 3) && center == getCellSymbol(3, 1))
                     )) {
-            println("Player $center wins!")
+            val textView : TextView = findViewById(R.id.message_text_view)
+            textView.text = "${currentPlayer} won"
             return true
         }
 
         // Check for draw
         var isDraw = true
-        for (row in 0..2) {
-            for (col in 0..2) {
-                if (getCellSymbol(row, col) == " ") {
+        for (row in 1..3) {
+            for (col in 1..3) {
+                if (getCellSymbol(row, col) == "") {
                     isDraw = false // At least one empty cell remains
                     break
                 }
@@ -101,7 +117,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (isDraw) {
-            println("It's a draw!")
+            val textView : TextView = findViewById(R.id.message_text_view)
+            textView.text = "Its a tie"
             return true
         }
 
@@ -110,10 +127,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCellSymbol(row: Int, col: Int): String {
-//        val tag = "board-cell-fragment-$row-$col"
-//        supportFragmentManager.findFragmentByTag(tag) as? BoardCellFragment
-        val cellFragment = supportFragmentManager.findFragmentByTag("board-cell-fragment-${row}-${col}")
-        return cellFragment.toString()
+        val cellFragment = supportFragmentManager.findFragmentByTag("board-cell-fragment-${row}-${col}") as BoardCellFragment
+        return cellFragment.text
     }
 
     private fun switchPlayers() {
@@ -124,5 +139,20 @@ class MainActivity : AppCompatActivity() {
 
         val textView : TextView = findViewById(R.id.message_text_view)
         textView.text = "It's ${currentPlayer.playerName} turn!"
+    }
+
+    private fun restartGame() {
+        for(row in 1..3) {
+            for(col in 1..3) {
+                val boardCellFragment : BoardCellFragment = supportFragmentManager.findFragmentByTag("board-cell-fragment-${row}-${col}") as BoardCellFragment
+                boardCellFragment.restartGameCell()
+            }
+        }
+
+        currentPlayer = PlayerState.X
+        val textView : TextView = findViewById(R.id.message_text_view)
+        textView.text = "It's ${currentPlayer.playerName} turn!"
+        val button: Button = findViewById(R.id.reset_button)
+        button.visibility = View.GONE
     }
 }

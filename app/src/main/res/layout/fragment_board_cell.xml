@@ -7,13 +7,13 @@
     android:padding="8dp"
     tools:context=".BoardCellFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <Button
         android:id="@+id/cell_button"
-        style="@style/cellButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center" />
+        android:textSize="50sp"
+        android:gravity="center"
+        android:background="@drawable/custom_cell_button"
+        />
 
 </FrameLayout>
