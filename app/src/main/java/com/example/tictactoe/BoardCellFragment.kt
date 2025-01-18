@@ -9,7 +9,7 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 
 class BoardCellFragment : Fragment() {
-    private var text : String = ""
+    var text : String = ""
     var onClickListener: OnCellClickListener? = null
 
     interface OnCellClickListener {
@@ -36,7 +36,6 @@ class BoardCellFragment : Fragment() {
                 button.text = text
                 onClickListener?.onCellClicked()
             }
-
         }
 
         return view
